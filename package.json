@@ -1,0 +1,8 @@
+{
+  "name": "midnight-reminder",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "test": "npx tsx --test src/**/*.test.ts"
+  }
+}
