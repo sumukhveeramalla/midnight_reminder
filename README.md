@@ -10,12 +10,41 @@ A [Pi coding agent](https://github.com/earendil-works/pi-coding-agent) extension
 
 ## Install
 
-1. Copy or symlink this extension into your Pi extensions directory:
-   ```bash
-   # macOS/Linux example
-   ln -s "$(pwd)" ~/.config/pi/extensions/midnight-reminder
-   ```
-2. Restart Pi or reload extensions.
+Clone the repository:
+```bash
+git clone <repo-url>
+cd midnight_reminder
+```
+
+## Usage
+
+### Quick run
+Load the extension directly from the project directory:
+```bash
+pi --extension ./midnight-reminder.ts
+```
+This starts Pi with the midnight reminder active for the current session.
+
+### Install permanently
+Add the extension to Pi so it loads automatically on every session:
+```bash
+pi install ./midnight-reminder.ts
+```
+
+To verify it's installed:
+```bash
+pi list
+```
+
+To remove it later:
+```bash
+pi remove midnight-reminder
+```
+
+### When the reminder appears
+- The notification `🌙 Midnight reminder` triggers when your local time is between **00:00 and 05:59**
+- It appears **at most once per day** — the extension tracks the last reminder date to prevent duplicates
+- Simply keep your Pi session active; no manual interaction needed
 
 ## Development
 
