@@ -1,7 +1,7 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import { getLocalDateString, isInMidnightWindow, shouldRemind } from "./src/policy.js";
 
-const REMINDER_TYPE = "midnight-reminder";
+const REMINDER_TYPE = "bedtime-test";
 
 interface ReminderEntry {
 	date: string; // YYYY-MM-DD local date
@@ -37,7 +37,7 @@ export default function (pi: ExtensionAPI) {
 
 			if (!shouldRemind(now, lastDate)) return;
 
-			ctx.ui.notify("🌙 Midnight reminder", "info");
+			ctx.ui.notify("🌙 Bedtime reminder", "info");
 			pi.appendEntry<ReminderEntry>(REMINDER_TYPE, { date: today });
 		};
 

@@ -1,4 +1,4 @@
-# Midnight Reminder
+# Bedtime Test
 
 A [Pi coding agent](https://github.com/earendil-works/pi-coding-agent) extension that displays a gentle notification during the midnight window (00:00–05:59), reminding you once per local day.
 
@@ -21,14 +21,14 @@ cd midnight_reminder
 ### Quick run
 Load the extension directly from the project directory:
 ```bash
-pi --extension ./midnight-reminder.ts
+pi --extension ./bedtime-test.ts
 ```
 This starts Pi with the midnight reminder active for the current session.
 
 ### Install permanently
 Add the extension to Pi so it loads automatically on every session:
 ```bash
-pi install ./midnight-reminder.ts
+pi install ./bedtime-test.ts
 ```
 
 To verify it's installed:
@@ -38,7 +38,7 @@ pi list
 
 To remove it later:
 ```bash
-pi remove midnight-reminder
+pi remove bedtime-test
 ```
 
 ### When the reminder appears
@@ -69,7 +69,7 @@ Tests cover:
 
 | File | Purpose |
 |------|---------|
-| `midnight-reminder.ts` | Pi extension entry point — starts an interval check on `session_start`, cleans up on `session_shutdown` |
+| `bedtime-test.ts` | Pi extension entry point — starts an interval check on `session_start`, cleans up on `session_shutdown` |
 | `src/policy.ts` | Pure logic: `isInMidnightWindow`, `shouldRemind`, `getLocalDateString` |
 | `src/policy.test.ts` | Unit tests for the policy functions |
 
