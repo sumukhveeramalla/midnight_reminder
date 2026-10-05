@@ -1,13 +1,10 @@
 import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import { getLocalDateString, isInMidnightWindow, shouldRemind } from "./src/policy.js";
 
 const REMINDER_TYPE = "midnight-reminder";
 
 interface ReminderEntry {
 	date: string; // YYYY-MM-DD local date
-}
-
-function getLocalDateString(d: Date): string {
-	return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function getLastReminderDate(ctx: ExtensionContext): string | undefined {
@@ -21,11 +18,6 @@ function getLastReminderDate(ctx: ExtensionContext): string | undefined {
 	return undefined;
 }
 
-function isInMidnightWindow(): boolean {
-	const hour = new Date().getHours();
-	return hour >= 0 && hour < 6;
-}
-
 export default function (pi: ExtensionAPI) {
 	let intervalId: ReturnType<typeof setInterval> | null = null;
 
@@ -37,12 +29,13 @@ export default function (pi: ExtensionAPI) {
 		}
 
 		const check = async () => {
-			if (!isInMidnightWindow()) return;
+			const now = new Date();
+			if (!isInMidnightWindow(now)) return;
 
-			const today = getLocalDateString(new Date());
+			const today = getLocalDateString(now);
 			const lastDate = getLastReminderDate(ctx);
 
-			if (lastDate === today) return;
+			if (!shouldRemind(now, lastDate)) return;
 
 			ctx.ui.notify("🌙 Midnight reminder", "info");
 			pi.appendEntry<ReminderEntry>(REMINDER_TYPE, { date: today });
@@ -61,5 +54,45 @@ export default function (pi: ExtensionAPI) {
 			clearInterval(intervalId);
 			intervalId = null;
 		}
+	});
+
+	pi.registerCommand("bedtime-test", {
+		description: "Demonstrate midnight reminder behavior with simulated time",
+		handler: async (_args, ctx) => {
+			type Scenario = { time: string; desc: string };
+
+			const scenarios: Scenario[] = [
+				{ time: "2024-01-15T23:59:00", desc: "23:59 (outside midnight window)" },
+				{ time: "2024-01-15T00:00:00", desc: "00:00 (midnight window — first reminder)" },
+				{ time: "2024-01-15T02:30:00", desc: "02:30 same day (duplicate — should skip)" },
+				{ time: "2024-01-16T00:00:00", desc: "00:00 next day (midnight window — new reminder)" },
+			];
+
+			const lines: string[] = [];
+			let lastReminderDate: string | undefined = undefined;
+
+			for (const s of scenarios) {
+				const d = new Date(s.time);
+				const window = isInMidnightWindow(d);
+				const today = getLocalDateString(d);
+				const remind = shouldRemind(d, lastReminderDate);
+
+				if (remind) {
+					lastReminderDate = today;
+				}
+
+				const action = remind ? "🔔 REMIND" : "⏭️  SKIP";
+				lines.push(`${action} — ${s.desc}\n   hour=${d.getHours()}, today=${today}, last=${lastReminderDate ?? "none"}, inWindow=${window}`);
+			}
+
+			const result = "🌙 /bedtime-test Simulated Results:\n\n" + lines.join("\n\n");
+
+			if (!ctx.isIdle()) {
+				ctx.ui.notify("Agent is busy — results sent as follow-up", "info");
+				pi.sendUserMessage(result, { deliverAs: "followUp" });
+			} else {
+				pi.sendUserMessage(result);
+			}
+		},
 	});
 }
