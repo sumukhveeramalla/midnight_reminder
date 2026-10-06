@@ -42,9 +42,9 @@ pi remove bedtime-test
 ```
 
 ### When the reminder appears
-- The notification `🌙 Midnight reminder` triggers when your local time is between **00:00 and 05:59**
-- It appears **at most once per day** — the extension tracks the last reminder date to prevent duplicates
-- Simply keep your Pi session active; no manual interaction needed
+- The reminder is shown when your local time is between 00:00 and 05:59.
+- Only one reminder is shown per day, preventing repeated notifications on the same date.
+- The reminder works automatically while your Pi session is running.
 
 ## Development
 
@@ -75,10 +75,8 @@ Tests cover:
 
 ### Reminder flow
 
-1. On session start, the extension checks immediately and then every 30 seconds
-2. If the current hour is `0–5` and no reminder was recorded for today, it:
-   - Shows a Pi UI notification
-   - Appends a history entry so the reminder won't fire again until the next day
+1. When a Pi session starts, the extension checks the time immediately and continues checking every 30 seconds.
+2. If the time is between 00:00–05:59 and no reminder has been shown for that day, it displays the reminder and records the date to prevent another reminder on the same day.
 
 ## License
 
