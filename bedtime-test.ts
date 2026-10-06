@@ -4,7 +4,7 @@ import { getLocalDateString, isInMidnightWindow, shouldRemind } from "./src/poli
 const REMINDER_TYPE = "bedtime-test";
 
 interface ReminderEntry {
-	date: string; // YYYY-MM-DD local date
+	date: string; // Stores the reminder date in local YYYY-MM-DD format
 }
 
 function getLastReminderDate(ctx: ExtensionContext): string | undefined {
@@ -22,7 +22,7 @@ export default function (pi: ExtensionAPI) {
 	let intervalId: ReturnType<typeof setInterval> | null = null;
 
 	pi.on("session_start", async (_event, ctx) => {
-		// Defensive: clear any leaked interval before starting a new one
+		// Clear any existing timer before starting a new one
 		if (intervalId) {
 			clearInterval(intervalId);
 			intervalId = null;
@@ -41,12 +41,12 @@ export default function (pi: ExtensionAPI) {
 			pi.appendEntry<ReminderEntry>(REMINDER_TYPE, { date: today });
 		};
 
-		// Check immediately in case Pi started inside the window
+		// Check once when the session starts
 		await check();
 
 		intervalId = setInterval(() => {
 			void check();
-		}, 30000); // every 30 seconds
+		}, 30000); // Check again every 30 seconds
 	});
 
 	pi.on("session_shutdown", () => {
