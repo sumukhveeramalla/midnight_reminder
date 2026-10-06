@@ -2,6 +2,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert";
 import { getLocalDateString, isInMidnightWindow, shouldRemind } from "./policy.js";
 
+// Tests local date formatting used for tracking daily reminders
 describe("getLocalDateString", () => {
   test("formats a basic date correctly", () => {
     const d = new Date("2024-01-15T00:00:00");
@@ -19,6 +20,7 @@ describe("getLocalDateString", () => {
   });
 });
 
+// Tests the reminder window boundaries from midnight to 6:00 AM
 describe("isInMidnightWindow", () => {
   test("23:59 is outside window", () => {
     const d = new Date("2024-01-15T23:59:00");
@@ -46,6 +48,7 @@ describe("isInMidnightWindow", () => {
   });
 });
 
+// Tests when a reminder should be shown or skipped
 describe("shouldRemind", () => {
   test("shows reminder at 00:00 if not reminded today", () => {
     const d = new Date("2024-01-15T00:00:00");
